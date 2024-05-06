@@ -1,0 +1,110 @@
+// Start the proyect
+
+The first thing we need to do is to create a new proyect. 
+So we need to create a file requirements.txt and install the dependencies.
+With command:
+
+```bash
+pip install -r requirements.txt - Windows
+pip3 install -r requirements.txt - Linux or Mac
+```
+
+The next thing is to create a new proyect. 
+
+```bash
+django-admin startproject myproject
+```
+
+The next thing is to create a new app. 
+
+```bash
+python manage.py startapp myapp
+```
+
+The next thing is to insert the app in the settings.py file.
+
+```python
+api,
+rest_framework
+```
+
+The next thing is to create a model in the app.
+
+The next thing is to create the serializer of the model, that we created.
+
+```python
+We need to import serializer from rest_framework.serializers
+from rest_framework import serializers
+and 
+the model from .models import BlogPost
+Now we need specify the fields that we want to show in the serializer.
+class BlogPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogPost
+        fields = ['id', 'title', 'content', 'published_date', 'updated_date']
+```
+
+The next thing is to create the view of the model.
+
+```python
+from django.shortcuts import render
+from rest_framework import generics
+from .models import BlogPost
+from .serializers import BlogPostSerializer
+
+class BlogPostListCreate(generics.ListCreateAPIView):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+```
+
+The next thing is to create the url of the view.
+
+But before, we need include the url of the app in the main urls.py file.
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls'))
+]
+```
+
+Now we can add the url in the app urls.py file.
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('blogPost/', views.BlogPostListCreate.as_view(), name='blogpost-view-create')
+]
+
+Now we can run this proyect with the command:
+
+```bash
+python manage.py runserver
+```
+And now we can see the proyect in the url: http://127.0.0.1:8000/api/v1/blogposts/
+
+// More Complex //
+
+If we want to updated a post, we need to create a new class in the views.py file.
+
+```python
+class BlogPostRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    lookup_field = 'pk'
+```
+And add the url in the app urls.py file.
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('blogPost/<int:pk>', views.BlogPostRetrieveUpdateDestroy.as_view(), name='blogpost-view-create')
+]
+
+
